@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Weather Dashboard — city search, 7-day forecast and hourly outlook, powered by the Open-Meteo API." />
+  <title>Weather Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body class="min-h-screen text-white font-[Inter]">
+
+  <!-- Animated gradient backdrop -->
+  <div id="sky" class="sky sky-clear-day"></div>
+
+  <main class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+
+    <!-- Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Weather Dashboard</h1>
+        <p class="text-white/70 text-sm mt-1">Live conditions, 7-day forecast &amp; hourly outlook</p>
+      </div>
+      <!-- Unit toggle -->
+      <div class="flex items-center gap-2 self-start sm:self-auto">
+        <span class="text-xs uppercase tracking-wider text-white/60">Units</span>
+        <div class="flex rounded-full bg-white/15 backdrop-blur border border-white/20 p-1" role="group" aria-label="Temperature unit">
+          <button id="btn-c" class="unit-btn" aria-pressed="false">°C</button>
+          <button id="btn-f" class="unit-btn unit-btn-active" aria-pressed="true">°F</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Search -->
+    <section class="relative mb-8" aria-label="City search">
+      <div class="relative">
+        <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/>
+        </svg>
+        <input
+          id="search-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder="Search a city — try &quot;Tokyo&quot;, &quot;Paris&quot;, &quot;Austin&quot;…"
+          aria-label="Search for a city"
+          class="w-full rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 placeholder-white/50 text-white pl-12 pr-4 py-3.5 text-base outline-none focus:bg-white/20 focus:border-white/40 transition"
+        />
+        <div id="search-spinner" class="absolute right-4 top-1/2 -translate-y-1/2 hidden" aria-hidden="true">
+          <div class="mini-spinner"></div>
+        </div>
+      </div>
+      <ul id="suggestions" role="listbox" aria-label="Search suggestions" class="hidden absolute left-0 right-0 mt-2 rounded-2xl bg-slate-900/95 backdrop-blur-md border border-white/15 shadow-2xl overflow-hidden z-30"></ul>
+    </section>
+
+    <!-- Error banner -->
+    <div id="error-banner" class="hidden mb-8 rounded-2xl bg-red-500/20 border border-red-300/30 backdrop-blur px-5 py-4 text-sm text-red-100" role="alert"></div>
+
+    <!-- Loading state -->
+    <div id="loader" class="flex flex-col items-center justify-center py-24">
+      <div class="spinner"></div>
+      <p class="mt-5 text-white/70 text-sm">Fetching the latest weather…</p>
+    </div>
+
+    <!-- Dashboard content -->
+    <div id="dashboard" class="hidden">
+
+      <!-- Current conditions hero -->
+      <section aria-label="Current conditions" class="glass rounded-3xl p-6 sm:p-10 mb-6">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+          <div>
+            <p id="location" class="text-white/70 text-sm font-medium tracking-wide uppercase mb-2">—</p>
+            <div class="flex items-start">
+              <span id="current-temp" class="text-7xl sm:text-8xl font-extrabold tracking-tighter leading-none">—</span>
+              <span id="current-unit-label" class="text-3xl font-bold text-white/60 mt-2">°F</span>
+            </div>
+            <p class="mt-3 text-xl font-semibold flex items-center gap-2">
+              <span id="current-icon" class="text-3xl" aria-hidden="true">⛅</span>
+              <span id="current-condition">—</span>
+            </p>
+            <p class="mt-2 text-white/70 text-sm">
+              Feels like <span id="feels-like" class="font-semibold text-white">—</span>
+              &nbsp;·&nbsp; High <span id="today-high" class="font-semibold text-white">—</span>
+              &nbsp;·&nbsp; Low <span id="today-low" class="font-semibold text-white">—</span>
+            </p>
+          </div>
+          <!-- Stat tiles -->
+          <div class="grid grid-cols-2 gap-3 w-full md:w-auto md:min-w-[300px]">
+            <div class="stat-tile">
+              <p class="stat-label">💧 Humidity</p>
+              <p id="humidity" class="stat-value">—</p>
+            </div>
+            <div class="stat-tile">
+              <p class="stat-label">🌬️ Wind</p>
+              <p id="wind" class="stat-value">—</p>
+            </div>
+            <div class="stat-tile">
+              <p class="stat-label">🌅 Sunrise</p>
+              <p id="sunrise" class="stat-value">—</p>
+            </div>
+            <div class="stat-tile">
+              <p class="stat-label">🌇 Sunset</p>
+              <p id="sunset" class="stat-value">—</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Hourly strip -->
+      <section aria-label="24-hour outlook" class="mb-6">
+        <h2 class="section-title">Next 24 hours</h2>
+        <div class="glass rounded-3xl p-4">
+          <div id="hourly-strip" class="hourly-scroll flex gap-2 overflow-x-auto pb-1"></div>
+        </div>
+      </section>
+
+      <!-- 7-day forecast -->
+      <section aria-label="7-day forecast">
+        <h2 class="section-title">7-day forecast</h2>
+        <div id="daily-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3"></div>
+      </section>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-12 text-center text-xs text-white/50">
+      Weather data by <a href="https://open-meteo.com/" target="_blank" rel="noopener" class="underline hover:text-white/80">Open-Meteo</a> · Built with vanilla JS &amp; Tailwind CSS
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
