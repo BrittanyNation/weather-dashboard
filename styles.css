@@ -1,0 +1,204 @@
+/* Weather Dashboard — custom styles layered on top of Tailwind.
+   The dynamic sky gradients below are switched at runtime (app.js)
+   based on the current weather code and time of day. */
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ---------- Animated sky backdrop ---------- */
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  transition: opacity 1.2s ease;
+}
+.sky-clear-day {
+  background: linear-gradient(160deg, #1e6fd9 0%, #4aa3f0 40%, #a8d8ff 100%);
+}
+.sky-clear-night {
+  background: linear-gradient(160deg, #060a1a 0%, #101b3c 55%, #1d2f5e 100%);
+}
+.sky-cloudy-day {
+  background: linear-gradient(160deg, #3b5a7e 0%, #6b8aa8 50%, #a7b9c9 100%);
+}
+.sky-cloudy-night {
+  background: linear-gradient(160deg, #0b1220 0%, #1c2740 60%, #2f3d5c 100%);
+}
+.sky-rain-day {
+  background: linear-gradient(160deg, #1f3a5f 0%, #33567f 55%, #5b7fa3 100%);
+}
+.sky-rain-night {
+  background: linear-gradient(160deg, #080d18 0%, #141d33 60%, #26314d 100%);
+}
+.sky-snow {
+  background: linear-gradient(160deg, #5a7ba6 0%, #8ba6c6 55%, #cfdcea 100%);
+}
+.sky-storm {
+  background: linear-gradient(160deg, #101828 0%, #232d42 60%, #3c4a66 100%);
+}
+
+/* ---------- Glassmorphism card ---------- */
+.glass {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+}
+
+.section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.75rem;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* ---------- Stat tiles ---------- */
+.stat-tile {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 1rem;
+  padding: 0.9rem 1rem;
+}
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.65);
+  margin-bottom: 0.25rem;
+}
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+/* ---------- Unit toggle ---------- */
+.unit-btn {
+  padding: 0.4rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+}
+.unit-btn:hover { color: #fff; }
+.unit-btn-active {
+  background: rgba(255, 255, 255, 0.9);
+  color: #1e3a5f;
+}
+
+/* ---------- Hourly strip ---------- */
+.hourly-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+.hourly-scroll::-webkit-scrollbar { height: 6px; }
+.hourly-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+}
+.hour-item {
+  flex: 0 0 auto;
+  width: 4.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.75rem 0.25rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.hour-item-now {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ---------- Day cards ---------- */
+.day-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 1.25rem;
+  padding: 1rem 0.75rem;
+  text-align: center;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.day-card:hover {
+  transform: translateY(-4px);
+  background: rgba(255, 255, 255, 0.16);
+}
+.day-card-today {
+  border-color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.18);
+}
+.precip-bar {
+  height: 4px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+.precip-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #7dd3fc, #38bdf8);
+}
+
+/* ---------- Suggestion dropdown ---------- */
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  text-align: left;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.suggestion-item:hover,
+.suggestion-item.suggestion-active {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* ---------- Spinners ---------- */
+.spinner {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  animation: spin 0.9s linear infinite;
+}
+.mini-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ---------- Content transitions ---------- */
+#dashboard { animation: fadeUp 0.5s ease both; }
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner, .mini-spinner { animation-duration: 2s; }
+  #dashboard { animation: none; }
+  .day-card:hover { transform: none; }
+}
